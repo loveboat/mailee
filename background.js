@@ -103,7 +103,7 @@ function tabsCount() {
 			console.log('mail open - setting alarm (delay: ' + timeToBeOpenInMinutes + ' mins)');
 			setKillAlarm(timeToBeOpenInMinutes);
 		} else {
-			chrome.browserAction.setBadgeText({text: '..zZ'});
+			chrome.browserAction.setBadgeText({text: 'Zz..'});
 		}
 	});
 }
