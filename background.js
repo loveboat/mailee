@@ -41,7 +41,7 @@ chrome.notifications.onButtonClicked.addListener(function (notificationId, butto
 		console.log('notification: extend the delay');
 		setKillAlarm(5);
 	} else if (buttonIndex === 1) {
-		console.log('notification: closing email tab');
+		console.log('notification: closing email tab(s)');
 		// TODO close the tab
 	}
 
@@ -63,23 +63,22 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 
 	if (alarm.name === 'mailee-kill') {
 		chrome.tabs.query({}, function (tabs) {
+
+			tabs = filterMailTabs(tabs);
+			console.log('tabs count: ' + tabs.length);
 			tabs.forEach(function(tab) {
 
-				// mail tab is open
-				if (tab.url.indexOf(mailUrl) !== -1) {
+				// is it in use?
+				if (tab.highlighted) {
+					console.log('extending alarm');
 
-					// is it in use?
-					if (tab.highlighted) {
-						console.log('extending alarm');
+					notifyUser();
+					setKillAlarm(1);
+				} else {
+					console.log('closing tab');
 
-						notifyUser();
-						setKillAlarm(1);
-					} else {
-						console.log('closing tab');
-
-						chrome.tabs.remove(tab.id);
-						clearNotifications();
-					}
+					chrome.tabs.remove(tab.id);
+					clearNotifications();
 				}
 			});
 		});
@@ -89,8 +88,8 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 function tabsCount() {
 	chrome.tabs.query({}, function (tabs) {
 		
-		var mailTabs = filterMailTabs(tabs);
-		if (mailTabs.length > 0) {
+		tabs = filterMailTabs(tabs);
+		if (tabs.length > 0) {
 			chrome.browserAction.setBadgeText({text: 'o.O'});
 			console.log('mail open - setting alarm (delay: ' + timeToBeOpenInMinutes + ' mins)');
 			setKillAlarm(timeToBeOpenInMinutes);
