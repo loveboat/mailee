@@ -25,8 +25,8 @@ function notifyUser() {
 		message: "time to stop reading your email perhaps?",
 		iconUrl: "icon_128.png",
 		buttons: [
-			{ title: 'give me five..'},
-			{ title: "ok, I'm done!"}
+			{ title: 'Give me five..'},
+			{ title: "Ok, I'm done!"}
 		]
 	};
 
@@ -38,7 +38,7 @@ function notifyUser() {
 chrome.notifications.onButtonClicked.addListener(function (notificationId, buttonIndex) {
 	if (buttonIndex === 0) {
 		console.log('notification: extend the delay');
-		// TODO extend the delay
+		setKillAlarm(5);
 	} else if (buttonIndex === 1) {
 		console.log('notification: closing email tab');
 		// TODO close the tab
@@ -51,6 +51,10 @@ function clearNotifications() {
 	chrome.notifications.clear('mailee-notification', function (wasCleared) {
 		console.log('notification: cleared');
 	});
+}
+
+function setKillAlarm(delay) {
+	chrome.alarms.create('mailee-kill', {delayInMinutes: delay});
 }
 
 chrome.alarms.onAlarm.addListener(function (alarm) {
@@ -68,7 +72,7 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 						console.log('extending alarm');
 
 						notifyUser();
-						chrome.alarms.create('mailee-kill', {delayInMinutes: 1});
+						setKillAlarm(1);
 					} else {
 						console.log('closing tab');
 
@@ -90,7 +94,7 @@ function tabsCount() {
 				chrome.browserAction.setBadgeText({text: 'Yes'});
 
 				console.log('mail open - setting alarm (delay: ' + timeToBeOpenInMinutes + ' mins)');
-				chrome.alarms.create('mailee-kill', {delayInMinutes: timeToBeOpenInMinutes});
+				setKillAlarm(timeToBeOpenInMinutes);
 			}
 		});
 	});
