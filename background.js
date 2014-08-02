@@ -24,9 +24,12 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 	if (alarm.name === 'gmail-killer') {
 		chrome.tabs.query({}, function (tabs) {
 			tabs.forEach(function(tab) {
-				if (tab.url.indexOf('https://mail.google.com/mail/') !== -1) {
+				if ((tab.url.indexOf('https://mail.google.com/mail/') !== -1) && (tab.highlighted == false)) {
 					console.log('gmail tab closed');
 					chrome.tabs.remove(tab.id);
+
+					chrome.alarms.create('gmail-killer', {delayInMinutes: 1});
+					console.log('extended alarm');
 				}
 			});
 		});
@@ -42,7 +45,7 @@ function tabsCount() {
 				chrome.browserAction.setBadgeText({text: 'Yes'});
 
 				console.log('setting alarm');
-				chrome.alarms.create('gmail-killer', {delayInMinutes: 0.1});
+				chrome.alarms.create('gmail-killer', {delayInMinutes: timeToBeOpenInMinutes});
 			}
 		});
 	});
