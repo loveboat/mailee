@@ -1,0 +1,19 @@
+{
+ 	"manifest_version": 2,
+	"name": "Mailee",
+	"version": "0.0.1",
+	"description": "Your best weapon in the fight against email overload!",
+	"icons": {
+    "128": "icon_128.png"
+  },
+	"browser_action": {
+    "default_title": "Thinking about checking your mail again?",
+    "default_icon": "gmail_logged_in.png",
+    "default_popup": "popup.html"
+	},
+	"background": {
+    "scripts": ["background.js"],
+    "persistent": true
+	},
+	"permissions": ["tabs", "alarms"]
+}
