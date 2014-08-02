@@ -1,3 +1,5 @@
+var timeToBeOpenInMinutes = 1;
+
 chrome.tabs.onUpdated.addListener(function(tabId, props, tab) {
 	if (props.status === "complete") {
 		tabsCount();
@@ -16,20 +18,24 @@ chrome.tabs.onRemoved.addListener(function(tabId, props) {
 //   tabsCount();
 // });
 
-var timeToBeOpenInMinutes = 1;
-
 chrome.alarms.onAlarm.addListener(function (alarm) {
 	console.log('alarm triggered');
 
 	if (alarm.name === 'gmail-killer') {
 		chrome.tabs.query({}, function (tabs) {
 			tabs.forEach(function(tab) {
-				if ((tab.url.indexOf('https://mail.google.com/mail/') !== -1) && (tab.highlighted == false)) {
-					console.log('gmail tab closed');
-					chrome.tabs.remove(tab.id);
 
-					chrome.alarms.create('gmail-killer', {delayInMinutes: 1});
-					console.log('extended alarm');
+				// mail tab is open
+				if (tab.url.indexOf('https://mail.google.com/mail/') !== -1) {
+
+					// is it in use?
+					if (tab.highlighted) {
+						console.log('extending alarm');
+						chrome.alarms.create('gmail-killer', {delayInMinutes: 1});
+					} else {
+						console.log('closing tab');
+						chrome.tabs.remove(tab.id);
+					}
 				}
 			});
 		});
@@ -44,7 +50,7 @@ function tabsCount() {
 			if (tab.url.indexOf('https://mail.google.com/mail/') !== -1) {
 				chrome.browserAction.setBadgeText({text: 'Yes'});
 
-				console.log('setting alarm');
+				console.log('mail open - setting alarm (delay: ' + timeToBeOpenInMinutes + ' mins)');
 				chrome.alarms.create('gmail-killer', {delayInMinutes: timeToBeOpenInMinutes});
 			}
 		});
@@ -55,8 +61,9 @@ function tabsCount() {
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	switch(request.type) {
 		case 'set-delay': {
-			timeToBeOpenInMinutes = request.message;
+			timeToBeOpenInMinutes = parseInt(request.message, 10);
 			console.log('setting delay: ' + timeToBeOpenInMinutes);
+			tabsCount();
 		}
 		break;
 	}
