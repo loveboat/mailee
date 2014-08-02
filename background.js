@@ -23,11 +23,33 @@ function notifyUser() {
 		type: "basic",
 		title: "Mailee would like a word..",
 		message: "time to stop reading your email perhaps?",
-		iconUrl: "icon_128.png"
+		iconUrl: "icon_128.png",
+		buttons: [
+			{ title: 'give me five..'},
+			{ title: "ok, I'm done!"}
+		]
 	};
 
-	chrome.notifications.create('mailee', options, function (notificationId) {
-		console.log('your notification has fired!');
+	chrome.notifications.create('mailee-notification', options, function (notificationId) {
+		console.log('notification: fired');
+	});
+}
+
+chrome.notifications.onButtonClicked.addListener(function (notificationId, buttonIndex) {
+	if (buttonIndex === 0) {
+		console.log('notification: extend the delay');
+		// TODO extend the delay
+	} else if (buttonIndex === 1) {
+		console.log('notification: closing email tab');
+		// TODO close the tab
+	}
+
+	clearNotifications();
+});
+
+function clearNotifications() {
+	chrome.notifications.clear('mailee-notification', function (wasCleared) {
+		console.log('notification: cleared');
 	});
 }
 
@@ -46,11 +68,12 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 						console.log('extending alarm');
 
 						notifyUser();
-
 						chrome.alarms.create('gmail-killer', {delayInMinutes: 1});
 					} else {
 						console.log('closing tab');
+
 						chrome.tabs.remove(tab.id);
+						clearNotifications();
 					}
 				}
 			});
