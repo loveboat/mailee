@@ -1,20 +1,22 @@
 chrome.tabs.onUpdated.addListener(function(tabId, props, tab) {
-  if (props.status === "complete") {
-    tabsCount();
-  }
+	if (props.status === "complete") {
+		tabsCount();
+	}
 });
 
 chrome.tabs.onSelectionChanged.addListener(function(tabId, props) {
-  tabsCount();
+	tabsCount();
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId, props) {
-  tabsCount();
+	tabsCount();
 });
 
 // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
 //   tabsCount();
 // });
+
+var timeToBeOpenInMinutes = 1;
 
 chrome.alarms.onAlarm.addListener(function (alarm) {
 	console.log('alarm triggered');
@@ -45,3 +47,15 @@ function tabsCount() {
 		});
 	});
 }
+
+// listen for an event coming from the popup
+chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+	switch(request.type) {
+		case 'set-delay': {
+			timeToBeOpenInMinutes = request.message;
+			console.log('setting delay: ' + timeToBeOpenInMinutes);
+		}
+		break;
+	}
+	return true;
+});
