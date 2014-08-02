@@ -88,16 +88,21 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 
 function tabsCount() {
 	chrome.tabs.query({}, function (tabs) {
-		chrome.browserAction.setBadgeText({text: '..zZ'});
+		
+		var mailTabs = filterMailTabs(tabs);
+		if (mailTabs.length > 0) {
+			chrome.browserAction.setBadgeText({text: 'o.O'});
+			console.log('mail open - setting alarm (delay: ' + timeToBeOpenInMinutes + ' mins)');
+			setKillAlarm(timeToBeOpenInMinutes);
+		} else {
+			chrome.browserAction.setBadgeText({text: '..zZ'});
+		}
+	});
+}
 
-		tabs.forEach(function (tab) {
-			if (tab.url.indexOf(mailUrl) !== -1) {
-				chrome.browserAction.setBadgeText({text: 'o.O'});
-
-				console.log('mail open - setting alarm (delay: ' + timeToBeOpenInMinutes + ' mins)');
-				setKillAlarm(timeToBeOpenInMinutes);
-			}
-		});
+function filterMailTabs(tabs) {
+	return tabs.filter(function (tab) {
+		return tab.url.indexOf(mailUrl) !== -1;
 	});
 }
 
