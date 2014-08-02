@@ -18,6 +18,19 @@ chrome.tabs.onRemoved.addListener(function(tabId, props) {
 //   tabsCount();
 // });
 
+function notifyUser() {
+	var options = {
+		type: "basic",
+		title: "Mailee would like a word..",
+		message: "time to stop reading your email perhaps?",
+		iconUrl: "icon_128.png"
+	};
+
+	chrome.notifications.create('mailee', options, function (notificationId) {
+		console.log('your notification has fired!');
+	});
+}
+
 chrome.alarms.onAlarm.addListener(function (alarm) {
 	console.log('alarm triggered');
 
@@ -31,6 +44,9 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 					// is it in use?
 					if (tab.highlighted) {
 						console.log('extending alarm');
+
+						notifyUser();
+
 						chrome.alarms.create('gmail-killer', {delayInMinutes: 1});
 					} else {
 						console.log('closing tab');
