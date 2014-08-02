@@ -42,7 +42,12 @@ chrome.notifications.onButtonClicked.addListener(function (notificationId, butto
 		setKillAlarm(5);
 	} else if (buttonIndex === 1) {
 		console.log('notification: closing email tab(s)');
-		// TODO close the tab
+		chrome.tabs.query({}, function (tabs) {
+			tabs = filterMailTabs(tabs);
+			tabs.forEach(function (tab) {
+				chrome.tabs.remove(tab.id);
+			});
+		});
 	}
 
 	clearNotifications();
