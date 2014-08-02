@@ -1,4 +1,5 @@
 var timeToBeOpenInMinutes = 1;
+var mailUrl = 'https://mail.google.com/mail/';
 
 chrome.tabs.onUpdated.addListener(function(tabId, props, tab) {
 	if (props.status === "complete") {
@@ -65,7 +66,7 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 			tabs.forEach(function(tab) {
 
 				// mail tab is open
-				if (tab.url.indexOf('https://mail.google.com/mail/') !== -1) {
+				if (tab.url.indexOf(mailUrl) !== -1) {
 
 					// is it in use?
 					if (tab.highlighted) {
@@ -90,7 +91,7 @@ function tabsCount() {
 		chrome.browserAction.setBadgeText({text: '..zZ'});
 
 		tabs.forEach(function (tab) {
-			if (tab.url.indexOf('https://mail.google.com/mail/') !== -1) {
+			if (tab.url.indexOf(mailUrl) !== -1) {
 				chrome.browserAction.setBadgeText({text: 'o.O'});
 
 				console.log('mail open - setting alarm (delay: ' + timeToBeOpenInMinutes + ' mins)');
