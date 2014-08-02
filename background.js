@@ -87,11 +87,11 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 
 function tabsCount() {
 	chrome.tabs.query({}, function (tabs) {
-		chrome.browserAction.setBadgeText({text: tabs.length.toString()});
+		chrome.browserAction.setBadgeText({text: '..zZ'});
 
 		tabs.forEach(function (tab) {
 			if (tab.url.indexOf('https://mail.google.com/mail/') !== -1) {
-				chrome.browserAction.setBadgeText({text: 'Yes'});
+				chrome.browserAction.setBadgeText({text: 'o.O'});
 
 				console.log('mail open - setting alarm (delay: ' + timeToBeOpenInMinutes + ' mins)');
 				setKillAlarm(timeToBeOpenInMinutes);
