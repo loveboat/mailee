@@ -1,5 +1,6 @@
 var timeToBeOpenInMinutes = 1;
 var mailUrl = 'https://mail.google.com/mail/';
+var userNotified = false;
 
 chrome.tabs.onUpdated.addListener(function(tabId, props, tab) {
 	if (props.status === "complete") {
@@ -33,6 +34,7 @@ function notifyUser() {
 
 	chrome.notifications.create('mailee-notification', options, function (notificationId) {
 		console.log('notification: fired');
+		userNotified = true;
 	});
 }
 
@@ -56,6 +58,7 @@ chrome.notifications.onButtonClicked.addListener(function (notificationId, butto
 function clearNotifications() {
 	chrome.notifications.clear('mailee-notification', function (wasCleared) {
 		console.log('notification: cleared');
+		userNotified = false;
 	});
 }
 
@@ -70,18 +73,19 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 		chrome.tabs.query({}, function (tabs) {
 
 			tabs = filterMailTabs(tabs);
-			console.log('tabs count: ' + tabs.length);
 			tabs.forEach(function(tab) {
 
 				// is it in use?
 				if (tab.highlighted) {
-					console.log('extending alarm');
-
-					notifyUser();
-					setKillAlarm(1);
+					if (userNotified) {
+						// beligerant mode - close the tab if the notification was ignored
+						chrome.tabs.remove(tab.id);
+						clearNotifications();
+					} else {
+						notifyUser();
+						setKillAlarm(1);
+					}
 				} else {
-					console.log('closing tab');
-
 					chrome.tabs.remove(tab.id);
 					clearNotifications();
 				}
