@@ -56,7 +56,7 @@ function clearNotifications() {
 chrome.alarms.onAlarm.addListener(function (alarm) {
 	console.log('alarm triggered');
 
-	if (alarm.name === 'gmail-killer') {
+	if (alarm.name === 'mailee-kill') {
 		chrome.tabs.query({}, function (tabs) {
 			tabs.forEach(function(tab) {
 
@@ -68,7 +68,7 @@ chrome.alarms.onAlarm.addListener(function (alarm) {
 						console.log('extending alarm');
 
 						notifyUser();
-						chrome.alarms.create('gmail-killer', {delayInMinutes: 1});
+						chrome.alarms.create('mailee-kill', {delayInMinutes: 1});
 					} else {
 						console.log('closing tab');
 
@@ -90,7 +90,7 @@ function tabsCount() {
 				chrome.browserAction.setBadgeText({text: 'Yes'});
 
 				console.log('mail open - setting alarm (delay: ' + timeToBeOpenInMinutes + ' mins)');
-				chrome.alarms.create('gmail-killer', {delayInMinutes: timeToBeOpenInMinutes});
+				chrome.alarms.create('mailee-kill', {delayInMinutes: timeToBeOpenInMinutes});
 			}
 		});
 	});
