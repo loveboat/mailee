@@ -2,6 +2,14 @@ var timeToBeOpenInMinutes = 1;
 var mailUrl = 'https://mail.google.com/mail/';
 var userNotified = false;
 
+chrome.runtime.onStartup.addListener(function () {
+	load();
+});
+
+chrome.runtime.onInstalled.addListener(function () {
+	load();
+});
+
 chrome.tabs.onUpdated.addListener(function(tabId, props, tab) {
 	if (props.status === "complete") {
 		tabsCount();
@@ -120,9 +128,30 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 		case 'set-delay': {
 			timeToBeOpenInMinutes = parseInt(request.message, 10);
 			console.log('setting delay: ' + timeToBeOpenInMinutes);
+			save();
 			tabsCount();
 		}
 		break;
 	}
 	return true;
 });
+
+function save() {
+	var state = {
+		mailee: {
+			delay: timeToBeOpenInMinutes
+		}
+	};
+	chrome.storage.sync.set(state, function () {
+		console.log('storage: saved');
+	});
+}
+
+function load() {
+	chrome.storage.sync.get('mailee', function (state) {
+		if (state.mailee !== undefined) {
+			console.log('storage: load (setting delay to ' + state.mailee.delay + ')');
+			timeToBeOpenInMinutes = parseInt(state.mailee.delay, 10);
+		}
+	});
+}
