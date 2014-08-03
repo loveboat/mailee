@@ -10,17 +10,17 @@ chrome.runtime.onInstalled.addListener(function () {
 	load();
 });
 
-chrome.tabs.onUpdated.addListener(function(tabId, props, tab) {
+chrome.tabs.onUpdated.addListener(function (tabId, props, tab) {
 	if (props.status === "complete") {
 		tabsCount();
 	}
 });
 
-chrome.tabs.onSelectionChanged.addListener(function(tabId, props) {
+chrome.tabs.onSelectionChanged.addListener (function(tabId, props) {
 	tabsCount();
 });
 
-chrome.tabs.onRemoved.addListener(function(tabId, props) {
+chrome.tabs.onRemoved.addListener(function (tabId, props) {
 	tabsCount();
 });
 
@@ -126,8 +126,8 @@ function filterMailTabs(tabs) {
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 	switch(request.type) {
 		case 'set-delay': {
-			timeToBeOpenInMinutes = parseInt(request.message, 10);
-			console.log('setting delay: ' + timeToBeOpenInMinutes);
+			setDelay(request.message);
+			console.log('setting delay: ' + request.message);
 			save();
 			tabsCount();
 		}
@@ -151,7 +151,11 @@ function load() {
 	chrome.storage.sync.get('mailee', function (state) {
 		if (state.mailee !== undefined) {
 			console.log('storage: load (setting delay to ' + state.mailee.delay + ')');
-			timeToBeOpenInMinutes = parseInt(state.mailee.delay, 10);
+			setDelay(state.mailee.delay);
 		}
 	});
+}
+
+function setDelay(delay) {
+	timeToBeOpenInMinutes = parseInt(delay, 10);
 }
